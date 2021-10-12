@@ -6,7 +6,7 @@ average = 0
 for i in range(len(x)):
     a = x[i:]
     b = x[:-i]
-    average += np.sum(a) / (len(x)-1)
+    if i > 1: average += np.sum(a) / (len(x)-1)
     np.append(a,b)
 
 classifier = average / len(x)
