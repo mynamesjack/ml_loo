@@ -1,5 +1,5 @@
 
-Leave-One-Out classification on a 1d array
-For an array of K-values, remove 1 value and then calculate the average of the remaining values and then add the removed value back in. Repeat n times for
-each value in the array. 
-Then find the average of the sum of averages for the classifier. 
+Leave-One-Out classification on a 1d array.
+
+For each object in the array, we remove it and calculate the treshold of the remaining objects. Then we use that treshold to classify the object that we removed.
+Each object has a pre-assigned label and we can use the newly assigned label to calculate the error rate.
