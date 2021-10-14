@@ -1,19 +1,25 @@
 import numpy as np
-x = np.array([-6,-2,0,4,11,15,24])
-average = 0
 
+# Here we're creating three arrays. One contains our objects, one the class labels of our objects and an empty array to store the newly classified labels.
+# The purpose is to see how accurate the new classifier is against the original labels.
+
+x = np.array([-6,-2,0,4,11,15,24])
+y = np.array([1,2,2,1,2,1,1])
+a = np.empty(len(x))
 
 for i in range(len(x)):
-    a = x[i:]
-    b = x[:-i]
-    if i > 1: average += np.sum(a) / (len(x)-1)
-    np.append(a,b)
-
-classifier = average / len(x)
-    
-class1 = x > classifier
-class2 = x < classifier
-
-print(classifier)
-print(f"The Values in class 1 are {x[class1]}")
-print(f"The Values in class 1 are {x[class2]}")
+    xn = np.delete(x,i)
+    yn = np.delete(y,i)
+   #We're creating a variable without the ith object and calculating the mean of every object with a y label of 1 and another for a label of 2.
+    m1 = np.mean(xn[np.where(yn==1)])
+    m2 = np.mean(xn[np.where(yn==2)])
+   #We calculate the threshold which is the mean of every object with label 1 + the mean of every object with label 2, divided by 2
+    t = (m1+m2) / 2
+    #Then we need to classified the removed object into either class 1 or class 2 and add either a 1 or 2 to the empty array, a.
+    if (m1 - m2) * (t-x[i]) > 0:
+        a[i] = 2
+    else:
+        a[i] = 1
+#Here we can print the array of class labels and compare them to the original array, y, to see how they compare and calculate an error rate.
+print(a)
+print(y)
