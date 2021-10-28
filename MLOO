@@ -1,8 +1,3 @@
-#Leave One Out classification on a one-dimensional data set. 
-#I've left a 1d array just to show how it works. It should be interchangable with any one-dimenionsal data you have.
-# Here we're creating three arrays. One contains our objects, one the class labels of our objects and an empty array to store the newly classified labels.
-# The purpose is to see how accurate the new classifier is against the original labels.
-
 import numpy as np
 
 # Here we're creating three arrays. One contains our objects, one the class labels of our objects and an empty array to store the newly classified labels.
@@ -10,10 +5,9 @@ import numpy as np
 
 Data = np.array([-6,-2,0,4,11,15,24])
 Labels = np.array([1,2,2,1,2,1,1])
-Assigned_Labels = np.empty(len(Data))
 
-
-def leave_one_out(data,labels,empty):
+def leave_one_out(data,labels):
+    Assigned_Labels = np.empty(len(Data))
     for i in range(len(data)):
         xn = np.delete(data,i)
         yn = np.delete(labels,i)
@@ -24,15 +18,16 @@ def leave_one_out(data,labels,empty):
         t = (m1+m2) / 2
     #Then we need to classified the removed object into either class 1 or class 2 and add either a 1 or 2 to the empty array, a.
         if (m1 - m2) * (t-data[i]) > 0:
-            empty[i] = 2
+            Assigned_Labels[i] = 2
         else:
-            empty[i] = 1
+            Assigned_Labels[i] = 1
 #Here we can print the array of class labels and compare them to the original array, y, to see how they compare and calculate an error rate.
     error = 0
     for i in range(len(labels)):
-        if empty[i] != labels[i]:
+        if Assigned_Labels[i] != labels[i]:
             error +=1
     l_error = error / len(labels)
     print(f"The Leave One Out Error is {l_error} ")
 
-leave_one_out(Data,Labels,Assigned_Labels)
+leave_one_out(Data, Labels)
+
