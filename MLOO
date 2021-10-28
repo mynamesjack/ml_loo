@@ -7,19 +7,25 @@ x = np.array([-6,-2,0,4,11,15,24])
 y = np.array([1,2,2,1,2,1,1])
 a = np.empty(len(x))
 
-for i in range(len(x)):
-    xn = np.delete(x,i)
-    yn = np.delete(y,i)
+
+def leave_one_out(data,labels,empty):
+    for i in range(len(x)):
+        xn = np.delete(x,i)
+        yn = np.delete(y,i)
    #We're creating a variable without the ith object and calculating the mean of every object with a y label of 1 and another for a label of 2.
-    m1 = np.mean(xn[np.where(yn==1)])
-    m2 = np.mean(xn[np.where(yn==2)])
+        m1 = np.mean(xn[np.where(yn==1)])
+        m2 = np.mean(xn[np.where(yn==2)])
    #We calculate the threshold which is the mean of every object with label 1 + the mean of every object with label 2, divided by 2
-    t = (m1+m2) / 2
+        t = (m1+m2) / 2
     #Then we need to classified the removed object into either class 1 or class 2 and add either a 1 or 2 to the empty array, a.
-    if (m1 - m2) * (t-x[i]) > 0:
-        a[i] = 2
-    else:
-        a[i] = 1
+        if (m1 - m2) * (t-x[i]) > 0:
+            a[i] = 2
+        else:
+            a[i] = 1
 #Here we can print the array of class labels and compare them to the original array, y, to see how they compare and calculate an error rate.
-print(a)
-print(y)
+    error = 0
+    for i in range(len(y)):
+        if a[i] != y[i]:
+            error +=1
+    l_error = error / len(y)
+    print(f"The Leave One Out Error is {l_error} ")
