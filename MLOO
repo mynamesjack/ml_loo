@@ -1,31 +1,100 @@
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#Here we're setting up the data. Using Pandas to read the file and then we're converting it with Numpy.
+
+
+#1 Data Handling and Visualisation
+dataset = pd.read_csv(r'/Users/jackbarrett/Downloads/data_banknote_authentication.txt', header=None)
+npdata = dataset.to_numpy()
+Data = npdata[:,0:-1]
+Labels = npdata[:,-1]
+genuine = Labels[Labels == 0]  #Genuine
+fraudulent = Labels[Labels == 1]   #Fraudulent
+
+'''
+plt.figure(figsize=(8,6))
+k = 1
+for i in range(4):
+    for j in range(4):
+        plt.subplot(4,4,k)
+        plt.scatter(Data[:,i], Data[:,j],c=Labels, s=0.2)
+        plt.axis('Off')
+        plt.axis('Equal')
+        ts = 'Features ' + str(i+1) + ' and ' + str(j+1) #Title String
+        plt.title(ts, size = 8)
+        k += 1
+plt.show()
+'''
+
+# 2. NMC
+#a
+def nearest_mean_classifier(training_data, training_labels, testing_data, testing_labels):
+    #Class labels are 1,2,...,c
+    c = np.max(training_labels).astype('int') #Number of classes
+    n = len(training_data[0]) #Number of features
+    m = np.empty((c,n)) #Array of means
+    for i in range(c):
+        m[i] = np.mean(training_data[training_labels == i+1],axis=0)
+    assigned_labels = np.empty((len(testing_labels)))
+    for i in range(len(testing_labels)):
+        x = testing_data[i] #Object i from testing data
+        dist = np.sum((m-x)**2, axis=1) #Distances from means
+        assigned_labels[i] = np.argmin(dist)+1
+    e = np.mean(testing_labels != assigned_labels)
+    return e, assigned_labels
+
+resub_error, as_labels = nearest_mean_classifier(Data,Labels,Data,Labels)
+
+#print('Resubstitution Error = ', resub_error, as_labels)
+
+#b apply the hold-out method
+
+np.random.shuffle(npdata)
+trd = npdata[:686] #Training Data
+tsd = npdata[686:] #Testing Data
+trl = trd[:,-1] # Training Labels
+tsl = tsd[:,-1] #Testing Labels
+
+h_error, as_labels = nearest_mean_classifier(trd,trl,tsd,tsl)
+print(f"Hold out error = {h_error}\nResub Error = {resub_error}")
+
+#Leave one out 
 
 # Here we're creating three arrays. One contains our objects, one the class labels of our objects and an empty array to store the newly classified labels.
 # The purpose is to see how accurate the new classifier is against the original labels.
 
-x = np.array([-6,-2,0,4,11,15,24])
-y = np.array([1,2,2,1,2,1,1])
-a = np.empty(len(x))
+import numpy as np
+
+# Here we're creating three arrays. One contains our objects, one the class labels of our objects and an empty array to store the newly classified labels.
+# The purpose is to see how accurate the new classifier is against the original labels.
+
+Data = np.array([-6,-2,0,4,11,15,24])
+Labels = np.array([1,2,2,1,2,1,1])
+Assigned_Labels = np.empty(len(Data))
 
 
 def leave_one_out(data,labels,empty):
-    for i in range(len(x)):
-        xn = np.delete(x,i)
-        yn = np.delete(y,i)
+    for i in range(len(data)):
+        xn = np.delete(data,i)
+        yn = np.delete(labels,i)
    #We're creating a variable without the ith object and calculating the mean of every object with a y label of 1 and another for a label of 2.
         m1 = np.mean(xn[np.where(yn==1)])
         m2 = np.mean(xn[np.where(yn==2)])
    #We calculate the threshold which is the mean of every object with label 1 + the mean of every object with label 2, divided by 2
         t = (m1+m2) / 2
     #Then we need to classified the removed object into either class 1 or class 2 and add either a 1 or 2 to the empty array, a.
-        if (m1 - m2) * (t-x[i]) > 0:
-            a[i] = 2
+        if (m1 - m2) * (t-data[i]) > 0:
+            empty[i] = 2
         else:
-            a[i] = 1
+            empty[i] = 1
 #Here we can print the array of class labels and compare them to the original array, y, to see how they compare and calculate an error rate.
     error = 0
-    for i in range(len(y)):
-        if a[i] != y[i]:
+    for i in range(len(labels)):
+        if empty[i] != labels[i]:
             error +=1
-    l_error = error / len(y)
+    l_error = error / len(labels)
     print(f"The Leave One Out Error is {l_error} ")
+
+leave_one_out(Data,Labels,Assigned_Labels)
